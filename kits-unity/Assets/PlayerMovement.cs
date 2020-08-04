@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
 
 				if (Input.GetButtonDown("Jump"))
 				{
-						animator.SetTrigger("Jump");
+						animator.SetBool("IsJumping", true);
 						jump = true;
 				}
 
@@ -36,6 +36,11 @@ public class PlayerMovement : MonoBehaviour
 				}
 
 		}
+
+		public void SetIsJumping(bool isJumping)
+    {
+				animator.SetBool("IsJumping", isJumping);
+    }
 
 		void FixedUpdate()
 		{

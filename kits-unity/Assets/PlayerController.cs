@@ -11,8 +11,9 @@ public class PlayerController : MonoBehaviour
 		[SerializeField] private LayerMask m_WhatIsGround;              // A mask determining what is ground to the character
 		[SerializeField] private Transform m_GroundCheck;             // A position marking where to check if the player is grounded.
 		[SerializeField] private Transform m_CeilingCheck;              // A position marking where to check for ceilings
+		[SerializeField] private Transform m_PickupCheck;              // A position marking where to check for ceilings
 		[SerializeField] private Collider2D m_CrouchDisableCollider;        // A collider that will be disabled when crouching
-
+		
 		const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 		private bool m_Grounded;            // Whether or not the player is grounded.
 		const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up
@@ -30,8 +31,9 @@ public class PlayerController : MonoBehaviour
 
 		public BoolEvent OnCrouchEvent;
 		private bool m_wasCrouching = false;
+    private bool m_Holding;
 
-		private void Awake()
+    private void Awake()
 		{
 				m_Rigidbody2D = GetComponent<Rigidbody2D>();
 
@@ -59,22 +61,27 @@ public class PlayerController : MonoBehaviour
                 {
 										OnLandEvent.Invoke();
 										Debug.Log("grounded");
-
 								}
 						}
 				}
 		}
 
-
-		public void Move(float move, bool crouch, bool jump, bool sprint)
+		public class MoveRequest
+    {
+				public float Move { get; set; }
+				public bool Crouch { get; set; }
+				public bool Jump { get; set; }
+				public bool Sprint { get; set; }
+    }
+		public void Move(MoveRequest request)
 		{
 				// If crouching, check to see if the character can stand up
-				if (!crouch)
+				if (!request.Crouch)
 				{
 						// If the character has a ceiling preventing them from standing up, keep them crouching
 						if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround))
 						{
-								crouch = true;
+								request.Crouch = true;
 						}
 				}
 
@@ -82,7 +89,7 @@ public class PlayerController : MonoBehaviour
 				if (m_Grounded || m_AirControl)
 				{						
 						// If crouching
-						if (crouch)
+						if (request.Crouch)
 						{
 								if (!m_wasCrouching)
 								{
@@ -91,7 +98,7 @@ public class PlayerController : MonoBehaviour
 								}
 
 								// Reduce the speed by the crouchSpeed multiplier
-								move *= m_CrouchSpeed;
+								request.Move *= m_CrouchSpeed;
 
 								// Disable one of the colliders when crouching
 								if (m_CrouchDisableCollider != null)
@@ -109,38 +116,45 @@ public class PlayerController : MonoBehaviour
 										OnCrouchEvent.Invoke(false);
 								}
 
-                if (sprint)
+                if (request.Sprint)
 								{ 	
-										move *= m_SprintSpeed;
+										request.Move *= m_SprintSpeed;
                 }
 						}
 
 						// Move the character by finding the target velocity
-						Vector3 targetVelocity = new Vector2(move * 10f, m_Rigidbody2D.velocity.y);
+						Vector3 targetVelocity = new Vector2(request.Move * 10f, m_Rigidbody2D.velocity.y);
 						// And then smoothing it out and applying it to the character
 						m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
 
 						// If the input is moving the player right and the player is facing left...
-						if (move > 0 && !m_FacingRight)
+						if (request.Move > 0 && !m_FacingRight)
 						{
 								// ... flip the player.
 								Flip();
 						}
 						// Otherwise if the input is moving the player left and the player is facing right...
-						else if (move < 0 && m_FacingRight)
+						else if (request.Move < 0 && m_FacingRight)
 						{
 								// ... flip the player.
 								Flip();
 						}
 				}
 				// If the player should jump...
-				if (m_Grounded && jump)
+				if (m_Grounded && request.Jump)
 				{
 						// Add a vertical force to the player.
 						m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
 						m_Grounded = false;
-				}
+				}				
 		}
+
+		public bool PickUp(GameObject obj)
+    {	
+				obj.gameObject.transform.SetParent(m_PickupCheck, false);
+				obj.gameObject.transform.localPosition = Vector3.zero;
+				return true;
+    }
 
 
 		private void Flip()

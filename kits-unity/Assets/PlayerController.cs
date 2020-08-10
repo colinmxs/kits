@@ -150,9 +150,13 @@ public class PlayerController : MonoBehaviour
 		}
 
 		public bool PickUp(GameObject obj)
-    {	
+    {
+				var rigidBody = GetComponent<Rigidbody2D>();
+				rigidBody.simulated = false;
+
 				obj.gameObject.transform.SetParent(m_PickupCheck, false);
 				obj.gameObject.transform.localPosition = Vector3.zero;
+
 				return true;
     }
 

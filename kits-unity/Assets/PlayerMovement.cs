@@ -12,19 +12,27 @@ public class PlayerMovement : MonoBehaviour
 
 		float horizontalMove = 0f;
 		bool jump = false;
-		bool crouch = false;
-		bool sprint = false;
 
-    internal bool PickUp(GameObject gameObject)
+		private GameObject focus;
+
+    internal bool Focus(GameObject gameObject)
     {
-        if (Input.GetButton("Pick Up"))
+				focus = gameObject;
+				return true;
+    }
+
+		internal bool LoseFocus(GameObject gameObject)
+    {
+				if(focus == gameObject)
         {
-            Debug.Log("try pickup");
-            return controller.PickUp(gameObject);
-        }
-        return false;
+						focus = null;
+						return true;
+				}
+				return false;
 		}
 
+    bool crouch = false;
+		bool sprint = false;
     bool pickup = true;
 
 		// Update is called once per frame
@@ -52,7 +60,13 @@ public class PlayerMovement : MonoBehaviour
 				else if (Input.GetButtonUp("Crouch"))
 				{
 						crouch = false;
-				}				
+				}
+
+				if (Input.GetButton("Pick Up") && focus != null)
+				{
+						controller.PickUp(gameObject);
+						focus = null;
+				}
 		}
 
 		public void SetIsJumping(bool isJumping)

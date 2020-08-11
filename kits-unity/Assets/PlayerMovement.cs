@@ -33,12 +33,13 @@ public class PlayerMovement : MonoBehaviour
 
     bool crouch = false;
 		bool sprint = false;
-    bool pickup = true;
+    GameObject pickup = null;
 
 		// Update is called once per frame
 		void Update()
 		{
 				horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+				var vert = Input.GetAxisRaw("Vertical");
 
 				if (horizontalMove != 0) animator.SetBool("IsRunning", true);
 				else animator.SetBool("IsRunning", false);
@@ -62,12 +63,25 @@ public class PlayerMovement : MonoBehaviour
 						crouch = false;
 				}
 
-				if (Input.GetButton("Pick Up") && focus != null)
+				if (Input.GetButtonDown("Pick Up") && focus != null && pickup == null)
 				{
-						controller.PickUp(gameObject);
-						focus = null;
+						var pickedUp = controller.PickUp(focus);
+            if (pickedUp)
+            {
+								pickup = focus;
+						}
 				}
-		}
+        else if (Input.GetButtonDown("Toss") && pickup != null)
+        {
+
+            var tossed = controller.Toss(pickup, vert);
+
+            if (tossed)
+            {
+                pickup = null;
+            }
+        }
+    }
 
 		public void SetIsJumping(bool isJumping)
     {

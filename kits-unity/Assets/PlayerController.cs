@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
+		[SerializeField] private float m_TossForce = 1000f;              // Amount of force added to the tossed object when the player tosses.
 		[SerializeField] private float m_JumpForce = 400f;              // Amount of force added when the player jumps.
 		[Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;      // Amount of maxSpeed applied to crouching movement. 1 = 100%
 		[Range(0, 1)] [SerializeField] private float m_SprintSpeed = 2f;      // Amount of maxSpeed applied to crouching movement. 1 = 100%
@@ -31,7 +33,6 @@ public class PlayerController : MonoBehaviour
 
 		public BoolEvent OnCrouchEvent;
 		private bool m_wasCrouching = false;
-    private bool m_Holding;
 
     private void Awake()
 		{
@@ -151,14 +152,29 @@ public class PlayerController : MonoBehaviour
 
 		public bool PickUp(GameObject obj)
     {
-				var rigidBody = GetComponent<Rigidbody2D>();
-				rigidBody.simulated = false;
-
+				Debug.Log("PickUp");
 				obj.gameObject.transform.SetParent(m_PickupCheck, false);
 				obj.gameObject.transform.localPosition = Vector3.zero;
-
-				return true;
+        var rigidBody = obj.GetComponent<Rigidbody2D>();
+        rigidBody.simulated = false;
+        return true;
     }
+
+		public bool Toss(GameObject obj, float vert)
+    {
+				Debug.Log("vert::" + vert);
+
+				var yMod = vert;
+				var xMod = 1f - Math.Abs(yMod);				
+
+				obj.gameObject.transform.SetParent(null, true);
+				var rigidBody = obj.GetComponent<Rigidbody2D>();
+				rigidBody.velocity = m_Rigidbody2D.velocity;
+				rigidBody.angularVelocity = 0f;
+				rigidBody.simulated = true;
+				rigidBody.AddForce(new Vector2(m_FacingRight ? m_TossForce*xMod : -1*m_TossForce*xMod, m_TossForce*yMod));
+				return true;
+		}
 
 
 		private void Flip()

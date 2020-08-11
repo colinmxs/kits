@@ -53344,6 +53344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0ad20a0bf999fe44a7a4723f4459f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_TossForce: 400
   m_JumpForce: 375
   m_CrouchSpeed: 0.36
   m_SprintSpeed: 2
@@ -53807,6 +53808,7 @@ GameObject:
   - component: {fileID: 1782346940}
   - component: {fileID: 1782346939}
   - component: {fileID: 1782346943}
+  - component: {fileID: 1782346944}
   m_Layer: 20
   m_Name: Punkin
   m_TagString: Untagged
@@ -53842,14 +53844,14 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.55
   m_LinearDrag: 0
   m_AngularDrag: 0.74
-  m_GravityScale: 1
+  m_GravityScale: 3.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!212 &1782346941
 SpriteRenderer:
@@ -53928,6 +53930,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ccc7abe0cd65ad48b9169d041c0da63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!58 &1782346944
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782346938}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.08127159, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.77391547
 --- !u!1 &1981448996
 GameObject:
   m_ObjectHideFlags: 0
